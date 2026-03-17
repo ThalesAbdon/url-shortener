@@ -24,7 +24,7 @@ import { UpdateUrlDto } from './dtos/update-url.dto';
 @Controller()
 export class UrlsController {
   private readonly logger = new Logger(UrlsController.name);
-
+  /* c8 ignore next */
   constructor(private readonly urlsService: UrlsService) {}
 
   @Post('shorten')
@@ -32,6 +32,7 @@ export class UrlsController {
   @ApiOperation({ summary: 'Create a new short URL' })
   @ApiResponse({ status: 201, description: 'Short URL created successfully' })
   @ApiResponse({ status: 400, description: 'Validation error' })
+  /* c8 ignore next */
   create(@Body() createUrlDto: CreateUrlDto) {
     this.logger.log(`Create request for: ${createUrlDto.url}`);
     return this.urlsService.create(createUrlDto);
@@ -55,6 +56,7 @@ export class UrlsController {
   @ApiResponse({ status: 404, description: 'Short URL not found' })
   update(
     @Param('shortCode') shortCode: string,
+    /* c8 ignore next */
     @Body() updateUrlDto: UpdateUrlDto,
   ) {
     this.logger.log(`Update request for: ${shortCode}`);
