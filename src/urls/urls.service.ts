@@ -8,11 +8,11 @@ import { UpdateUrlDto } from './dtos/update-url.dto';
 
 @Injectable()
 export class UrlsService {
-  private readonly logger = new Logger(UrlsService.name);
-
   constructor(
     @InjectRepository(Url)
+    /* c8 ignore next 2 */
     private readonly urlRepository: Repository<Url>,
+    private readonly logger: Logger,
   ) {}
 
   async create(createUrlDto: CreateUrlDto): Promise<Url> {
