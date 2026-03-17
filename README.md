@@ -162,6 +162,9 @@ For full interactive documentation, visit `http://localhost:4040/docs`.
 ## Running Tests
 
 ```bash
+# If you haven't installed the dependencies yet
+npm install
+
 # Start the test database
 docker compose up db-test -d
 
@@ -205,9 +208,6 @@ npm run migration:revert
 
 ```
 src/
-├── common/
-│   └── filters/
-│       └── http-exception.filter.ts  # Global exception filter
 ├── migrations/                        # TypeORM migration files
 ├── urls/
 │   ├── dtos/
@@ -248,6 +248,12 @@ E2E tests run against a real PostgreSQL instance (`db-test`) rather than mocks o
 **Two-stage Docker build**  
 The Dockerfile uses a builder stage to compile TypeScript and a lean production stage that only copies `dist/` and production dependencies, resulting in a smaller and more secure final image.
 
+**Rate limiting**  
+Each IP is limited to 3 requests per second and 100 requests per minute using `@nestjs/throttler`. 
+Requests exceeding the limit receive a `429 Too Many Requests` response. The `ttl` and `limit` 
+values are hardcoded for simplicity but could be extracted to environment variables to allow 
+fine-tuning per environment without rebuilding the application.
+
 ---
 
 ## Future Improvements
@@ -255,7 +261,6 @@ The Dockerfile uses a builder stage to compile TypeScript and a lean production 
 - **Custom short codes** — allow users to choose their own short code instead of a random one
 - **Expiration** — add a `expiresAt` field to auto-expire links after a given time
 - **Full redirect endpoint** — add `GET /:shortCode` that redirects with `301/302` directly from the API (currently the frontend is responsible)
-- **Rate limiting** — prevent abuse on the `POST /shorten` endpoint using `@nestjs/throttler`
 - **Pre-generated code pool** — at high scale, pre-generate and cache available short codes to avoid collision retries
 - **Pagination on stats** — add access logs with timestamps per visit for richer analytics
 - **Authentication** — allow users to manage only their own URLs

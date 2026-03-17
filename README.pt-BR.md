@@ -162,6 +162,9 @@ Para a documentação interativa completa, acesse `http://localhost:4040/docs`.
 ## Executando os Testes
 
 ```bash
+# Caso as dependências ainda não estejam instaladas
+npm install
+
 # Suba o banco de testes
 docker compose up db-test -d
 
@@ -245,6 +248,12 @@ Os testes E2E rodam contra uma instância real de PostgreSQL (`db-test`) em vez 
 **Build Docker em dois estágios**  
 O Dockerfile usa um estágio builder para compilar o TypeScript e um estágio de produção enxuto que copia apenas o `dist/` e as dependências de produção, resultando em uma imagem final menor e mais segura.
 
+**Rate limiting**
+Cada IP é limitado a 3 requisições por segundo e 100 por minuto usando `@nestjs/throttler`. 
+Requisições acima do limite recebem `429 Too Many Requests`. Os valores de `ttl` e `limit` 
+estão fixos no código por simplicidade, mas poderiam ser extraídos para variáveis de ambiente, 
+permitindo ajuste por ambiente sem necessidade de rebuild da aplicação.
+
 ---
 
 ## Melhorias Futuras
@@ -252,7 +261,6 @@ O Dockerfile usa um estágio builder para compilar o TypeScript e um estágio de
 - **Códigos personalizados** — permitir que o usuário escolha seu próprio código curto
 - **Expiração de links** — adicionar campo `expiresAt` para expirar links automaticamente após um período
 - **Endpoint de redirecionamento** — adicionar `GET /:shortCode` que redireciona com `301/302` diretamente pela API (atualmente o frontend é responsável pelo redirecionamento)
-- **Rate limiting** — prevenir abuso no endpoint `POST /shorten` usando `@nestjs/throttler`
 - **Pool de códigos pré-gerados** — em alta escala, pré-gerar e cachear códigos disponíveis para evitar retries de colisão
 - **Logs de acesso com timestamps** — registrar cada acesso individualmente para análises mais ricas
 - **Autenticação** — permitir que usuários gerenciem apenas suas próprias URLs
