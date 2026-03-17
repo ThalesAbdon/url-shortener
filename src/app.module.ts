@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UrlsModule } from './urls/urls.module';
 import { Url } from './urls/entities/url.entity';
+import { UrlsModule } from './urls/urls.module';
 
 @Module({
   imports: [
@@ -15,6 +15,7 @@ import { Url } from './urls/entities/url.entity';
         url: config.get('DATABASE_URL'),
         entities: [Url],
         synchronize: true,
+        ssl: false,
       }),
     }),
     UrlsModule,
