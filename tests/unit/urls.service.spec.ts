@@ -38,6 +38,7 @@ describe('UrlsService', () => {
             save: jest.fn(),
             increment: jest.fn(),
             remove: jest.fn(),
+            createQueryBuilder: jest.fn(),
           },
         },
         {
@@ -65,7 +66,7 @@ describe('UrlsService', () => {
       const saved = makeUrl();
 
       mockNanoid.mockReturnValue('abc123');
-      repo.findOne.mockResolvedValue(null); 
+      repo.findOne.mockResolvedValue(null);
       repo.create.mockReturnValue(saved);
       repo.save.mockResolvedValue(saved);
 
@@ -85,8 +86,8 @@ describe('UrlsService', () => {
 
       mockNanoid.mockReturnValueOnce('abc123').mockReturnValueOnce('xyz789');
       repo.findOne
-        .mockResolvedValueOnce(makeUrl())
-        .mockResolvedValueOnce(null);      
+        .mockResolvedValueOnce(makeUrl()) 
+        .mockResolvedValueOnce(null);     
 
       repo.create.mockReturnValue(saved);
       repo.save.mockResolvedValue(saved);
@@ -104,15 +105,29 @@ describe('UrlsService', () => {
   describe('findByShortCode', () => {
     it('should increment accessCount and return the URL', async () => {
       const url = makeUrl({ accessCount: 3 });
+      const updated = makeUrl({ accessCount: 4 });
+
       repo.findOne.mockResolvedValue(url);
-      repo.increment.mockResolvedValue(undefined as any);
+
+      const qb: any = {
+        update: jest.fn(),
+        set: jest.fn(),
+        where: jest.fn(),
+        returning: jest.fn(),
+        execute: jest.fn().mockResolvedValue({ raw: [updated] }),
+      };
+      qb.update.mockReturnValue(qb);
+      qb.set.mockReturnValue(qb);
+      qb.where.mockReturnValue(qb);
+      qb.returning.mockReturnValue(qb);
+      repo.createQueryBuilder.mockReturnValue(qb);
 
       const result = await service.findByShortCode('abc123');
 
-      expect(repo.increment).toHaveBeenCalledWith({ shortCode: 'abc123' }, 'accessCount', 1);
+      expect(qb.execute).toHaveBeenCalled();
       expect(result.accessCount).toBe(4);
       expect(logger.log).toHaveBeenCalledWith(
-        `URL accessed: abc123 -> ${url.url} (count: 4)`,
+        `URL accessed: abc123 -> ${updated.url} (count: 4)`,
       );
     });
 
@@ -139,7 +154,7 @@ describe('UrlsService', () => {
 
       const result = await service.update('abc123', dto);
 
-      expect(url.url).toBe(dto.url); 
+      expect(url.url).toBe(dto.url);
       expect(repo.save).toHaveBeenCalledWith(url);
       expect(logger.log).toHaveBeenCalledWith(`URL updated: abc123 -> ${updated.url}`);
       expect(result).toBe(updated);

@@ -32,6 +32,7 @@ export class UrlsService {
     return saved;
   }
 
+  
   async findByShortCode(shortCode: string): Promise<Url> {
     const url = await this.urlRepository.findOne({ where: { shortCode } });
 
@@ -40,13 +41,19 @@ export class UrlsService {
       throw new NotFoundException(`Short URL '${shortCode}' not found`);
     }
 
-    await this.urlRepository.increment({ shortCode }, 'accessCount', 1);
-    url.accessCount += 1;
-    this.logger.log(`URL accessed: ${shortCode} -> ${url.url} (count: ${url.accessCount})`);
+    const result = await this.urlRepository
+      .createQueryBuilder()
+      .update(Url)
+      .set({ accessCount: () => '"accessCount" + 1' })
+      .where('shortCode = :shortCode', { shortCode })
+      .returning('*')
+      .execute();
 
-    return url;
+    const updated: Url = result.raw[0];
+    this.logger.log(`URL accessed: ${shortCode} -> ${updated.url} (count: ${updated.accessCount})`);
+
+    return updated;
   }
-
   async update(shortCode: string, updateUrlDto: UpdateUrlDto): Promise<Url> {
     const url = await this.urlRepository.findOne({ where: { shortCode } });
 
