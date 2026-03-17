@@ -6,18 +6,16 @@ services:
     ports:
       - "4040:4040"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5433/urlshortener
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/urlshortener
+      PORT: 4040
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - .:/app
-      - /app/node_modules
 
   db:
     image: postgres:16-alpine
     ports:
-      - "5433:5432"
+      - "5499:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
