@@ -21,7 +21,10 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+COPY entrypoint.sh ./entrypoint.sh
+
+RUN chmod +x entrypoint.sh
 
 EXPOSE 4040
 
-CMD ["node", "dist/main"]
+CMD ["./entrypoint.sh"]
