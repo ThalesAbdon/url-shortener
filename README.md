@@ -208,6 +208,9 @@ npm run migration:revert
 
 ```
 src/
+├── common/
+│   └── filters/
+│       └── http-exception.filter.ts  # Global exception filter
 ├── migrations/                        # TypeORM migration files
 ├── urls/
 │   ├── dtos/
@@ -249,10 +252,10 @@ E2E tests run against a real PostgreSQL instance (`db-test`) rather than mocks o
 The Dockerfile uses a builder stage to compile TypeScript and a lean production stage that only copies `dist/` and production dependencies, resulting in a smaller and more secure final image.
 
 **Rate limiting**  
-Each IP is limited to 3 requests per second and 100 requests per minute using `@nestjs/throttler`. 
-Requests exceeding the limit receive a `429 Too Many Requests` response. The `ttl` and `limit` 
-values are hardcoded for simplicity but could be extracted to environment variables to allow 
-fine-tuning per environment without rebuilding the application.
+Each IP is limited to 3 requests per second and 100 requests per minute using `@nestjs/throttler`. Requests exceeding the limit receive a `429 Too Many Requests` response. The `ttl` and `limit` values are hardcoded for simplicity but could be extracted to environment variables to allow fine-tuning per environment without rebuilding the application.
+
+**Global exception filter**  
+All errors are caught by a global `HttpExceptionFilter` that returns a consistent response contract — `statusCode`, `timestamp`, `path`, and `message` — regardless of where the exception originates. Unknown errors return `500 Internal Server Error` without exposing stack traces, while `HttpException` instances preserve their original status codes. Errors 5xx are logged with full stack traces; 4xx are logged as warnings.
 
 ---
 
