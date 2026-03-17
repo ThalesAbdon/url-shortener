@@ -58,7 +58,7 @@ Esta API permite encurtar URLs longas e acompanhar quantas vezes cada URL curta 
 
 ```bash
 # Clone o repositório
-git clone <repository-url>
+git clone https://github.com/ThalesAbdon/url-shortener.git
 cd url-shortener
 
 # Copie as variáveis de ambiente
