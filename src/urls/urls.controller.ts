@@ -20,12 +20,13 @@ import {
 import { UrlsService } from './urls.service';
 import { CreateUrlDto } from './dtos/create-url.dto';
 import { UpdateUrlDto } from './dtos/update-url.dto';
-import { Url } from './entities/url.entity';
+import { UrlResponseDto } from './dtos/url-response.dto';
 
 @ApiTags('URLs')
 @Controller()
 export class UrlsController {
   private readonly logger = new Logger(UrlsController.name);
+
   /* c8 ignore next */
   constructor(private readonly urlsService: UrlsService) {}
 
@@ -33,21 +34,11 @@ export class UrlsController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new short URL' })
   @ApiBody({ type: CreateUrlDto })
-  @ApiResponse({
-    status: 201,
-    description: 'Short URL created successfully',
-    type: Url,
-  })
+  @ApiResponse({ status: 201, description: 'Short URL created successfully', type: UrlResponseDto })
   @ApiResponse({
     status: 400,
     description: 'Validation error',
-    schema: {
-      example: {
-        statusCode: 400,
-        message: ['url must be a valid URL'],
-        error: 'Bad Request',
-      },
-    },
+    schema: { example: { statusCode: 400, message: ['url must be a valid URL'], error: 'Bad Request' } },
   })
   /* c8 ignore next */
   create(@Body() createUrlDto: CreateUrlDto) {
@@ -58,21 +49,11 @@ export class UrlsController {
   @Get('shorten/:shortCode')
   @ApiOperation({ summary: 'Retrieve original URL from short code' })
   @ApiParam({ name: 'shortCode', example: 'abc123', description: 'The short code of the URL' })
-  @ApiResponse({
-    status: 200,
-    description: 'URL found',
-    type: Url,
-  })
+  @ApiResponse({ status: 200, description: 'URL found', type: UrlResponseDto })
   @ApiResponse({
     status: 404,
     description: 'Short URL not found',
-    schema: {
-      example: {
-        statusCode: 404,
-        message: "Short URL 'abc123' not found",
-        error: 'Not Found',
-      },
-    },
+    schema: { example: { statusCode: 404, message: "Short URL 'abc123' not found", error: 'Not Found' } },
   })
   findOne(@Param('shortCode') shortCode: string) {
     this.logger.log(`Retrieve request for: ${shortCode}`);
@@ -83,36 +64,19 @@ export class UrlsController {
   @ApiOperation({ summary: 'Update an existing short URL' })
   @ApiParam({ name: 'shortCode', example: 'abc123', description: 'The short code of the URL' })
   @ApiBody({ type: UpdateUrlDto })
-  @ApiResponse({
-    status: 200,
-    description: 'URL updated successfully',
-    type: Url,
-  })
+  @ApiResponse({ status: 200, description: 'URL updated successfully', type: UrlResponseDto })
   @ApiResponse({
     status: 400,
     description: 'Validation error',
-    schema: {
-      example: {
-        statusCode: 400,
-        message: ['url must be a valid URL'],
-        error: 'Bad Request',
-      },
-    },
+    schema: { example: { statusCode: 400, message: ['url must be a valid URL'], error: 'Bad Request' } },
   })
   @ApiResponse({
     status: 404,
     description: 'Short URL not found',
-    schema: {
-      example: {
-        statusCode: 404,
-        message: "Short URL 'abc123' not found",
-        error: 'Not Found',
-      },
-    },
+    schema: { example: { statusCode: 404, message: "Short URL 'abc123' not found", error: 'Not Found' } },
   })
   update(
     @Param('shortCode') shortCode: string,
-    /* c8 ignore next */
     @Body() updateUrlDto: UpdateUrlDto,
   ) {
     this.logger.log(`Update request for: ${shortCode}`);
@@ -127,13 +91,7 @@ export class UrlsController {
   @ApiResponse({
     status: 404,
     description: 'Short URL not found',
-    schema: {
-      example: {
-        statusCode: 404,
-        message: "Short URL 'abc123' not found",
-        error: 'Not Found',
-      },
-    },
+    schema: { example: { statusCode: 404, message: "Short URL 'abc123' not found", error: 'Not Found' } },
   })
   remove(@Param('shortCode') shortCode: string) {
     this.logger.log(`Delete request for: ${shortCode}`);
@@ -143,21 +101,11 @@ export class UrlsController {
   @Get('shorten/:shortCode/stats')
   @ApiOperation({ summary: 'Get statistics for a short URL' })
   @ApiParam({ name: 'shortCode', example: 'abc123', description: 'The short code of the URL' })
-  @ApiResponse({
-    status: 200,
-    description: 'Stats retrieved successfully',
-    type: Url,
-  })
+  @ApiResponse({ status: 200, description: 'Stats retrieved successfully', type: UrlResponseDto })
   @ApiResponse({
     status: 404,
     description: 'Short URL not found',
-    schema: {
-      example: {
-        statusCode: 404,
-        message: "Short URL 'abc123' not found",
-        error: 'Not Found',
-      },
-    },
+    schema: { example: { statusCode: 404, message: "Short URL 'abc123' not found", error: 'Not Found' } },
   })
   getStats(@Param('shortCode') shortCode: string) {
     this.logger.log(`Stats request for: ${shortCode}`);
